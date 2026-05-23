@@ -41,7 +41,7 @@ function isAdmin() {
 function loginUser(studentId, password) {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
     const user = users.find(u => u.studentId === studentId && u.password === password);
-    
+
     if (user) {
         const currentUser = {
             id: user.id,
@@ -53,7 +53,7 @@ function loginUser(studentId, password) {
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
         return { success: true, user: currentUser };
     }
-    
+
     return { success: false, error: '학번 또는 비밀번호가 일치하지 않습니다.' };
 }
 
