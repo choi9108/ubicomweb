@@ -11,9 +11,11 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
-    public String Name;
+    public String name;
     @Column(unique = true)
     public Integer userId;
     public String major;
     public String password;
+
+
 }

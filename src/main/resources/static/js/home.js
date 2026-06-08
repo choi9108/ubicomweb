@@ -1,21 +1,34 @@
 // Home page functionality
 
+// home.js 파일의 상단 부분 예시
+
 document.addEventListener('DOMContentLoaded', function() {
     const mainContent = document.getElementById('main-content');
-    const user = getCurrentUser();
-    
-    if (user) {
-        // Show Dashboard for logged in users
-        showDashboard(mainContent, user);
+
+    // 1. 우선 로컬 캐시에 저장된 정보가 있다면 대시보드를 빠르게 렌더링 (깜빡임 방지)
+    const cachedUser = getCurrentUser(); // 공통 스크립트의 함수 호출
+    if (cachedUser) {
+        showDashboard(mainContent, cachedUser);
     } else {
-        // Show Landing Page for visitors
         showLandingPage(mainContent);
     }
+
+    // 2. [핵심] 공통 스크립트가 서버 인증 검증을 마친 시점('authVerified')을 구독합니다.
+    window.addEventListener('authVerified', function(e) {
+        const verifiedUser = e.detail; // 서버가 보낸 진짜 세션 유저 정보
+
+        if (verifiedUser) {
+            // 검증된 유저 정보로 홈 대시보드 확정 및 갱신
+            showDashboard(mainContent, verifiedUser);
+        } else {
+            // 세션이 없거나 만료된 상태라면 방문자 페이지 확정
+            showLandingPage(mainContent);
+        }
+    });
 });
 
 function showLandingPage(container) {
     container.innerHTML = `
-        <!-- Hero Section -->
         <section class="bg-gradient-to-br from-blue-600 to-blue-800 text-white py-20">
             <div class="container mx-auto px-4 text-center">
                 <h1 class="text-5xl md:text-6xl font-bold mb-6">UbiCOM에 오신 것을 환영합니다</h1>
@@ -34,7 +47,6 @@ function showLandingPage(container) {
             </div>
         </section>
 
-        <!-- Features Section -->
         <section class="py-16 bg-gray-50">
             <div class="container mx-auto px-4">
                 <h2 class="text-4xl font-bold text-center mb-12">우리의 활동</h2>
@@ -51,7 +63,7 @@ function showLandingPage(container) {
                     <div class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6 text-center">
                         <div class="flex justify-center mb-4">
                             <svg class="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656 Sec126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                             </svg>
                         </div>
                         <h3 class="text-xl font-bold mb-2">협업 프로젝트</h3>
@@ -79,7 +91,6 @@ function showLandingPage(container) {
             </div>
         </section>
 
-        <!-- Activities Section -->
         <section class="py-16">
             <div class="container mx-auto px-4">
                 <h2 class="text-4xl font-bold text-center mb-12">정기 활동</h2>
@@ -103,7 +114,6 @@ function showLandingPage(container) {
             </div>
         </section>
 
-        <!-- CTA Section -->
         <section class="py-16 bg-blue-600 text-white">
             <div class="container mx-auto px-4 text-center">
                 <h2 class="text-3xl md:text-4xl font-bold mb-6">지금 바로 시작하세요!</h2>
@@ -121,17 +131,15 @@ function showLandingPage(container) {
 function showDashboard(container, user) {
     const recentNotices = JSON.parse(localStorage.getItem('notices') || '[]').slice(0, 5);
     const recentPosts = JSON.parse(localStorage.getItem('posts') || '[]').slice(0, 5);
-    
+
     container.innerHTML = `
         <div class="min-h-[calc(100vh-16rem)] py-8 px-4 bg-gray-50">
             <div class="container mx-auto max-w-6xl">
-                <!-- Welcome Section -->
                 <div class="mb-8">
                     <h1 class="text-4xl font-bold mb-2">${user.username}님, 환영합니다!</h1>
                     <p class="text-gray-600">UbiCOM 커뮤니티에서 활발히 활동해보세요</p>
                 </div>
 
-                <!-- Quick Stats -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="bg-white rounded-lg shadow p-6">
                         <div class="flex items-center justify-between">
@@ -174,7 +182,6 @@ function showDashboard(container, user) {
                     </div>
                 </div>
 
-                <!-- Quick Links -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white rounded-lg shadow p-6">
                         <h2 class="text-xl font-bold mb-4">바로가기</h2>
@@ -215,4 +222,11 @@ function showDashboard(container, user) {
             </div>
         </div>
     `;
+}
+
+// 혹시 스크립트 내부에 기존에 사용하던 안전한 날짜 변환 함수(formatDate)가 없다면 아래를 유지하거나 살려두세요.
+function formatDate(dateString) {
+    if(!dateString) return '';
+    const date = new Date(dateString);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }

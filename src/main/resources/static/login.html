@@ -38,20 +38,20 @@
                     <p class="text-sm text-red-800"></p>
                 </div>
 
-                <form id="login-form" class="space-y-6">
+                <form action="/login" method="POST" id="login-form" class="space-y-6">
                     <div class="space-y-2">
                         <label for="studentId" class="block text-sm font-medium text-gray-700">학번</label>
                         <div class="relative">
                             <svg class="absolute left-3 top-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
-                            <input 
-                                type="text" 
-                                id="studentId" 
-                                maxlength="8"
-                                placeholder=""
-                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                required
+                            <input
+                                    type="text"
+                                    id="studentId"
+                                    name="userid" maxlength="8"
+                                    placeholder=""
+                                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    required
                             >
                         </div>
                         <p class="text-xs text-gray-500">8자리 학번을 입력하세요</p>
@@ -63,19 +63,19 @@
                             <svg class="absolute left-3 top-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                             </svg>
-                            <input 
-                                type="password" 
-                                id="password" 
-                                placeholder=""
-                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                required
+                            <input
+                                    type="password"
+                                    id="password"
+                                    name="password" placeholder=""
+                                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    required
                             >
                         </div>
                     </div>
 
-                    <button 
-                        type="submit"
-                        class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors font-medium"
+                    <button
+                            type="submit"
+                            class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors font-medium"
                     >
                         로그인
                     </button>
@@ -108,5 +108,60 @@
 
     <script src="js/auth.js"></script>
     <script src="js/login.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('login-form');
+            const errorBox = document.getElementById('error-message');
+
+            // [체크 1] 스프링 시큐리티가 로그인 실패 후 리다이렉트 시킨 경우 (?error=true)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('error') === 'true') {
+                showError('학번 또는 비밀번호가 일치하지 않습니다.');
+            }
+
+            // [체크 2] 폼 전송(로그인 버튼 클릭) 시 유효성 검사
+            loginForm.addEventListener('submit', function(e) {
+                // 외부 오류 유발을 막기 위해 브라우저 전송을 잠시 막음
+                e.preventDefault();
+                hideError();
+
+                const studentId = document.getElementById('studentId').value.trim();
+                const password = document.getElementById('password').value;
+
+                // 프론트엔드 자체 입력값 검증
+                if (!studentId || !password) {
+                    showError('학번과 비밀번호를 모두 입력해주세요.');
+                    return;
+                }
+
+                if (studentId.length !== 8) {
+                    showError('학번은 8자리여야 합니다.');
+                    return;
+                }
+
+                // ★ 중요: localStorage에 미리 유저 정보를 저장하던 로직은 삭제했습니다.
+                // 로그인 성공 여부는 오직 백엔드(서버)만 알 수 있기 때문입니다.
+
+                // 모든 검증이 끝났으므로 스프링 시큐리티 서버(/login)로 진짜 데이터 전송!
+                loginForm.submit();
+            });
+
+            // 에러 메시지창 띄우기 함수 (Tailwind 기반)
+            function showError(message) {
+                if (errorBox) {
+                    errorBox.classList.remove('hidden');
+                    errorBox.querySelector('p').textContent = message;
+                }
+            }
+
+            // 에러 메시지창 숨기기 함수
+            function hideError() {
+                if (errorBox) {
+                    errorBox.classList.add('hidden');
+                }
+            }
+        });
+    </script>
 </body>
 </html>
