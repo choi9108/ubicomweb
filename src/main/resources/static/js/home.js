@@ -241,9 +241,7 @@ function showDashboard(container, user) {
                     </div>
                     
                 </div>
-                
-            </div>
-            <!-- ================= [ADMIN ONLY] 가입 신청 현황 섹션 ================= -->
+                <!-- ================= [ADMIN ONLY] 가입 신청 현황 섹션 ================= -->
                 ${isAdmin ? `
                     <div class="mb-8 bg-white rounded-lg shadow-md border border-blue-100 overflow-hidden">
                         <div class="p-6 border-b border-gray-100 bg-white">
@@ -301,6 +299,8 @@ function showDashboard(container, user) {
                     </div>
                 ` : ''}
                 <!-- ====================================================================== -->
+            </div>
+            
         </div>
     `;
 }
