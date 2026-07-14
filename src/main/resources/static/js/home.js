@@ -84,35 +84,14 @@ function showLandingPage(container) {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold mb-2">정기 모임</h3>
-                        <p class="text-gray-600">정기적인 세미나와 스터디를 통해 지식을 나눕니다.</p>
+                        <h3 class="text-xl font-bold mb-2">정기 스터디</h3>
+                        <p class="text-gray-600">정기적인 스터디를 통해 지식을 키웁니다.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="py-16">
-            <div class="container mx-auto px-4">
-                <h2 class="text-4xl font-bold text-center mb-12">정기 활동</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-                    <div class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6">
-                        <h3 class="text-xl font-bold text-blue-600 mb-2">주간 세미나</h3>
-                        <p class="text-sm text-gray-500 mb-4">매주 수요일 18:00</p>
-                        <p class="text-gray-700">매주 새로운 기술과 트렌드를 공유하는 시간</p>
-                    </div>
-                    <div class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6">
-                        <h3 class="text-xl font-bold text-blue-600 mb-2">프로젝트 발표회</h3>
-                        <p class="text-sm text-gray-500 mb-4">학기말</p>
-                        <p class="text-gray-700">학기별 프로젝트 결과를 발표하고 피드백 공유</p>
-                    </div>
-                    <div class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6">
-                        <h3 class="text-xl font-bold text-blue-600 mb-2">해커톤 참여</h3>
-                        <p class="text-sm text-gray-500 mb-4">연 2회</p>
-                        <p class="text-gray-700">외부 해커톤 및 공모전 단체 참여</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        
 
         <section class="py-16 bg-blue-600 text-white">
             <div class="container mx-auto px-4 text-center">
