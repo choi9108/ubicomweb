@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import org.springframework.web.bind.annotation.RequestParam;
+import java.security.SecureRandom;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -19,6 +22,7 @@ import java.io.PrintWriter;
 public class MemberController {
 
     private final MemberRepository memberRepository;
+    private final EmailService emailService;
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -162,6 +166,90 @@ public class MemberController {
         usersRepository.save(user);
 
         return "redirect:/";
+    }
+
+    @GetMapping("/forgot-password")
+    public String forgotPassword() {
+        return "forward:/forgot-password.html";
+    }
+
+    @PostMapping("/password/reset-temp")
+    @Transactional
+    public String resetTemporaryPassword(
+            @RequestParam Integer userid,
+            @RequestParam String email,
+            HttpServletResponse response
+    ) throws IOException {
+
+        var memberResult = memberRepository.findByUserId(userid);
+
+        if (memberResult.isEmpty()) {
+            showAlertAndMove(
+                    response,
+                    "학번 또는 이메일이 일치하지 않습니다.",
+                    "/forgot-password"
+            );
+            return null;
+        }
+
+        Member member = memberResult.get();
+
+        if (member.getEmail() == null
+                || !member.getEmail().equalsIgnoreCase(email.trim())) {
+            showAlertAndMove(
+                    response,
+                    "학번 또는 이메일이 일치하지 않습니다.",
+                    "/forgot-password"
+            );
+            return null;
+        }
+
+        String temporaryPassword = createTemporaryPassword();
+
+
+
+        emailService.sendTemporaryPassword(
+                member.getEmail(),
+                temporaryPassword
+        );
+
+        member.setPassword(passwordEncoder.encode(temporaryPassword));
+        memberRepository.save(member);
+
+        showAlertAndMove(
+                response,
+                "임시 비밀번호를 이메일로 발송했습니다.",
+                "/login"
+        );
+
+        return null;
+    }
+
+    private String createTemporaryPassword() {
+
+        SecureRandom random = new SecureRandom();
+
+        int number = 100000 + random.nextInt(900000);
+
+        return String.valueOf(number);
+    }
+
+    private void showAlertAndMove(
+            HttpServletResponse response,
+            String message,
+            String location
+    ) throws IOException {
+
+        response.setContentType("text/html; charset=UTF-8");
+
+        PrintWriter out = response.getWriter();
+
+        out.println("<script>");
+        out.println("alert('" + message + "');");
+        out.println("location.href='" + location + "';");
+        out.println("</script>");
+
+        out.flush();
     }
 }
 
